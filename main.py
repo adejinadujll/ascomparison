@@ -83,6 +83,7 @@ if st.sidebar.checkbox("Login"):
         with tab1:
             
             st.write("Use this tab to identify records which have been recently updated.")
+            st.caption("Remove all special characters from .csv files to avoid upload errors.")
             
             uploaded_file_1 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload1")
             
@@ -113,6 +114,7 @@ if st.sidebar.checkbox("Login"):
         with tab2:
             
             st.write("Use this tab to identify records which have been recently added.")
+            st.caption("Remove all special characters from .csv files to avoid upload errors.")
             
             uploaded_file_2 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload3")
             
@@ -143,6 +145,7 @@ if st.sidebar.checkbox("Login"):
         with tab3:
             
             st.write("Use this tab to identify records which have been recently removed.")
+            st.caption("Remove all special characters from .csv files to avoid upload errors.")
             
             uploaded_file_4 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload5")
             
