@@ -61,114 +61,110 @@ def compare_existing_rows(df,df1):
     return(changed)
     
     
-password = st.sidebar.text_input("Password",type='password')
 
-if st.sidebar.checkbox("Login"):
-    
-    if password == 'beatone':
                
-        st.header("Agents Society Comparison Tool")
+st.header("Agents Society Comparison Tool")
+
+tabs_font_css = """
+<style>
+button[data-baseweb="tab"] {
+    font-size: 20px;
+}
+</style>
+"""
+
+st.write(tabs_font_css, unsafe_allow_html=True)
+tab1, tab2, tab3 = st.tabs(["   Updated Records  ", "   New Records Created   ", "   Removed Records   "])
+
+with tab1:
+    
+    st.write("Use this tab to identify records which have been recently updated.")
+    st.caption("Remove all special characters from .csv files to avoid upload errors.")
+    
+    uploaded_file_1 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload1")
+    
+    if uploaded_file_1 is not None:
+    
+        df = pd.read_csv(uploaded_file_1,encoding="unicode_escape")
         
-        tabs_font_css = """
-        <style>
-        button[data-baseweb="tab"] {
-            font-size: 20px;
-        }
-        </style>
-        """
-      
-        st.write(tabs_font_css, unsafe_allow_html=True)
-        tab1, tab2, tab3 = st.tabs(["   Updated Records  ", "   New Records Created   ", "   Removed Records   "])
+        with st.expander("See Uploaded Data"):
+        
+            st.write(df)
+            
+    uploaded_file_2 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload2")
+    
+    if uploaded_file_2 is not None:
+    
+        df1 = pd.read_csv(uploaded_file_2,encoding="unicode_escape")
+        
+        with st.expander("See Uploaded Data"):
+        
+            st.write(df1)
+            
+    if uploaded_file_1 is not None and uploaded_file_2 is not None:
+        
+        result = compare_existing_rows(df,df1)
 
-        with tab1:
+        st.write(result)
+        
+with tab2:
+    
+    st.write("Use this tab to identify records which have been recently added.")
+    st.caption("Remove all special characters from .csv files to avoid upload errors.")
+    
+    uploaded_file_2 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload3")
+    
+    if uploaded_file_2 is not None:
+    
+        df = pd.read_csv(uploaded_file_2,encoding="unicode_escape")
+        
+        with st.expander("See Uploaded Data"):
+        
+            st.write(df)
             
-            st.write("Use this tab to identify records which have been recently updated.")
-            st.caption("Remove all special characters from .csv files to avoid upload errors.")
+    uploaded_file_3 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload4")
+    
+    if uploaded_file_3 is not None:
+    
+        df1 = pd.read_csv(uploaded_file_3,encoding="unicode_escape")
+        
+        with st.expander("See Uploaded Data"):
+        
+            st.write(df1)
             
-            uploaded_file_1 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload1")
-            
-            if uploaded_file_1 is not None:
-            
-                df = pd.read_csv(uploaded_file_1,encoding="unicode_escape")
-                
-                with st.expander("See Uploaded Data"):
-                
-                    st.write(df)
-                    
-            uploaded_file_2 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload2")
-            
-            if uploaded_file_2 is not None:
-            
-                df1 = pd.read_csv(uploaded_file_2,encoding="unicode_escape")
-                
-                with st.expander("See Uploaded Data"):
-                
-                    st.write(df1)
-                    
-            if uploaded_file_1 is not None and uploaded_file_2 is not None:
-                
-                result = compare_existing_rows(df,df1)
+    if uploaded_file_2 is not None and uploaded_file_3 is not None:
+        
+        result = find_new_additions(df,df1)
 
-                st.write(result)
-                
-        with tab2:
+        st.write(result)
+        
+with tab3:
+    
+    st.write("Use this tab to identify records which have been recently removed.")
+    st.caption("Remove all special characters from .csv files to avoid upload errors.")
+    
+    uploaded_file_4 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload5")
+    
+    if uploaded_file_4 is not None:
+    
+        df = pd.read_csv(uploaded_file_4,encoding="unicode_escape")
+        
+        with st.expander("See Uploaded Data"):
+        
+            st.write(df)
             
-            st.write("Use this tab to identify records which have been recently added.")
-            st.caption("Remove all special characters from .csv files to avoid upload errors.")
+    uploaded_file_5 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload6")
+    
+    if uploaded_file_5 is not None:
+    
+        df1 = pd.read_csv(uploaded_file_5,encoding="unicode_escape")
+        
+        with st.expander("See Uploaded Data"):
+        
+            st.write(df1)
             
-            uploaded_file_2 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload3")
-            
-            if uploaded_file_2 is not None:
-            
-                df = pd.read_csv(uploaded_file_2,encoding="unicode_escape")
-                
-                with st.expander("See Uploaded Data"):
-                
-                    st.write(df)
-                    
-            uploaded_file_3 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload4")
-            
-            if uploaded_file_3 is not None:
-            
-                df1 = pd.read_csv(uploaded_file_3,encoding="unicode_escape")
-                
-                with st.expander("See Uploaded Data"):
-                
-                    st.write(df1)
-                    
-            if uploaded_file_2 is not None and uploaded_file_3 is not None:
-                
-                result = find_new_additions(df,df1)
+    if uploaded_file_4 is not None and uploaded_file_5 is not None:
+        
+        result = no_longer_listed(df,df1)
 
-                st.write(result)
-                
-        with tab3:
-            
-            st.write("Use this tab to identify records which have been recently removed.")
-            st.caption("Remove all special characters from .csv files to avoid upload errors.")
-            
-            uploaded_file_4 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload5")
-            
-            if uploaded_file_4 is not None:
-            
-                df = pd.read_csv(uploaded_file_4,encoding="unicode_escape")
-                
-                with st.expander("See Uploaded Data"):
-                
-                    st.write(df)
-                    
-            uploaded_file_5 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload6")
-            
-            if uploaded_file_5 is not None:
-            
-                df1 = pd.read_csv(uploaded_file_5,encoding="unicode_escape")
-                
-                with st.expander("See Uploaded Data"):
-                
-                    st.write(df1)
-                    
-            if uploaded_file_4 is not None and uploaded_file_5 is not None:
-                
-                result = no_longer_listed(df,df1)
-
-                st.write(result)
+        st.write(result)
