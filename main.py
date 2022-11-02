@@ -1,11 +1,5 @@
 import streamlit as st 
-from math import radians, sin, cos, asin, sqrt
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-import numpy as np
 import pandas as pd
-from statistics import mean
-import altair as alt
 
 st.set_page_config(layout="wide")
 
@@ -71,7 +65,7 @@ password = st.sidebar.text_input("Password",type='password')
 
 if st.sidebar.checkbox("Login"):
     
-    if password == '12345':
+    if password == 'beatone':
                
         st.header("Agents Society Comparison Tool")
         
