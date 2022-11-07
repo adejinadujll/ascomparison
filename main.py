@@ -59,10 +59,14 @@ def compare_existing_rows(df,df1):
     changed = changed.set_index("Advert ID")
     
     return(changed)
-    
-    
 
-               
+@st.cache
+def convert_df(df):
+    
+    return df.to_csv()
+
+ 
+                   
 st.header("Agents Society Comparison Tool")
 
 tabs_font_css = """
@@ -81,15 +85,22 @@ with tab1:
     st.write("Use this tab to identify records which have been recently updated.")
     st.caption("Remove all special characters from .csv files to avoid upload errors.")
     
-    uploaded_file_1 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload1")
+    st.subheader("Upload Files")
     
-    if uploaded_file_1 is not None:
-    
-        df = pd.read_csv(uploaded_file_1,encoding="unicode_escape")
+    try:
+        uploaded_file_1 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload1")
         
-        with st.expander("See Uploaded Data"):
+        if uploaded_file_1 is not None:
         
-            st.write(df)
+            df = pd.read_csv(uploaded_file_1,encoding="unicode_escape")
+            
+            with st.expander("See Uploaded Data"):
+            
+                st.write(df)
+                
+    except:
+        
+        st.write("Upload error.")
             
     uploaded_file_2 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload2")
     
@@ -100,6 +111,8 @@ with tab1:
         with st.expander("See Uploaded Data"):
         
             st.write(df1)
+    
+    st.subheader("Results")
             
     if uploaded_file_1 is not None and uploaded_file_2 is not None:
         
@@ -107,10 +120,22 @@ with tab1:
 
         st.write(result)
         
+        res = convert_df(result)
+        
+        if res:
+            
+            st.download_button(
+            label="Download results as CSV",
+            data=res,
+            file_name='Missing records.csv',
+            mime='text/csv',)
+        
 with tab2:
     
     st.write("Use this tab to identify records which have been recently added.")
     st.caption("Remove all special characters from .csv files to avoid upload errors.")
+    
+    st.subheader("Upload Files")
     
     uploaded_file_2 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload3")
     
@@ -131,6 +156,8 @@ with tab2:
         with st.expander("See Uploaded Data"):
         
             st.write(df1)
+    
+    st.subheader("Results")
             
     if uploaded_file_2 is not None and uploaded_file_3 is not None:
         
@@ -138,10 +165,22 @@ with tab2:
 
         st.write(result)
         
+        res = convert_df(result)
+        
+        if res:
+            
+            st.download_button(
+            label="Download results as CSV",
+            data=res,
+            file_name='Missing records.csv',
+            mime='text/csv',)
+        
 with tab3:
     
     st.write("Use this tab to identify records which have been recently removed.")
     st.caption("Remove all special characters from .csv files to avoid upload errors.")
+    
+    st.subheader("Upload Files")
     
     uploaded_file_4 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload5")
     
@@ -162,9 +201,22 @@ with tab3:
         with st.expander("See Uploaded Data"):
         
             st.write(df1)
-            
+    
+    st.subheader("Results")
+    
     if uploaded_file_4 is not None and uploaded_file_5 is not None:
         
         result = no_longer_listed(df,df1)
 
         st.write(result)
+        
+        res = convert_df(result)
+        
+        if res:
+        
+            st.download_button(
+            label="Download results as CSV",
+            data=res,
+            file_name='Missing records.csv',
+            mime='text/csv',)
+    
