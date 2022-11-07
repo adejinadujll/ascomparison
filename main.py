@@ -101,16 +101,21 @@ with tab1:
     except:
         
         st.write("Upload error.")
+    
+    try:
+        uploaded_file_2 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload2")
+        
+        if uploaded_file_2 is not None:
+        
+            df1 = pd.read_csv(uploaded_file_2,encoding="unicode_escape")
             
-    uploaded_file_2 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload2")
-    
-    if uploaded_file_2 is not None:
-    
-        df1 = pd.read_csv(uploaded_file_2,encoding="unicode_escape")
+            with st.expander("See Uploaded Data"):
+            
+                st.write(df1)
+            
+    except:
         
-        with st.expander("See Uploaded Data"):
-        
-            st.write(df1)
+        st.write("Upload error.")
     
     st.subheader("Results")
             
@@ -137,25 +142,35 @@ with tab2:
     
     st.subheader("Upload Files")
     
-    uploaded_file_2 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload3")
-    
-    if uploaded_file_2 is not None:
-    
-        df = pd.read_csv(uploaded_file_2,encoding="unicode_escape")
+    try:
         
-        with st.expander("See Uploaded Data"):
+        uploaded_file_2 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload3")
         
-            st.write(df)
+        if uploaded_file_2 is not None:
+        
+            df = pd.read_csv(uploaded_file_2,encoding="unicode_escape")
             
-    uploaded_file_3 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload4")
+            with st.expander("See Uploaded Data"):
+            
+                st.write(df)
     
-    if uploaded_file_3 is not None:
+    except:
+        
+        st.write("Upload error.")     
     
-        df1 = pd.read_csv(uploaded_file_3,encoding="unicode_escape")
+    try:
+        uploaded_file_3 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload4")
         
-        with st.expander("See Uploaded Data"):
+        if uploaded_file_3 is not None:
         
-            st.write(df1)
+            df1 = pd.read_csv(uploaded_file_3,encoding="unicode_escape")
+            
+            with st.expander("See Uploaded Data"):
+            
+                st.write(df1)
+    except:
+        
+        st.write("Upload error.")
     
     st.subheader("Results")
             
@@ -182,26 +197,36 @@ with tab3:
     
     st.subheader("Upload Files")
     
-    uploaded_file_4 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload5")
-    
-    if uploaded_file_4 is not None:
-    
-        df = pd.read_csv(uploaded_file_4,encoding="unicode_escape")
+    try:
         
-        with st.expander("See Uploaded Data"):
+        uploaded_file_4 = st.file_uploader(label="Upload Initial AS Extract (.csv)",key="upload5")
         
-            st.write(df)
+        if uploaded_file_4 is not None:
+        
+            df = pd.read_csv(uploaded_file_4,encoding="unicode_escape")
             
-    uploaded_file_5 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload6")
-    
-    if uploaded_file_5 is not None:
-    
-        df1 = pd.read_csv(uploaded_file_5,encoding="unicode_escape")
+            with st.expander("See Uploaded Data"):
+            
+                st.write(df)
+    except:
         
-        with st.expander("See Uploaded Data"):
-        
-            st.write(df1)
+        st.write("Upload error.")
     
+    try:
+        
+        uploaded_file_5 = st.file_uploader(label="Upload Latest AS Extract (.csv)",key="upload6")
+        
+        if uploaded_file_5 is not None:
+        
+            df1 = pd.read_csv(uploaded_file_5,encoding="unicode_escape")
+            
+            with st.expander("See Uploaded Data"):
+            
+                st.write(df1)
+    except:
+        
+        st.write("Upload error.")
+        
     st.subheader("Results")
     
     if uploaded_file_4 is not None and uploaded_file_5 is not None:
