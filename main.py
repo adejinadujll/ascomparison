@@ -111,10 +111,10 @@ if platform_options :
         st.warning("Please select 1 platform.")
 
 if len(platform_options) == 1:
-   
+
     try:
         uploaded_file_1 = st.file_uploader(label="Upload Initial File", key="upload1")
-        
+
         if uploaded_file_1 is not None:
             
             df = pd.read_csv(uploaded_file_1,encoding="unicode_escape")
@@ -137,6 +137,10 @@ if len(platform_options) == 1:
             with st.expander("See Uploaded Data"):
             
                 st.write(df1)
+        
+        if uploaded_file_1 is None and uploaded_file_2 is None:        
+            
+            st.warning("Upload files in .csv format removing all special characters e.g. commas and pound signs.")
             
     except:
         
@@ -150,22 +154,27 @@ if len(platform_options) == 1:
         with tab1:
             
             st.write("Use this tab to identify records which have been recently updated.")
-                            
-            result = compare_existing_rows(platform_options[0],df,df1)
+            
+            try:                
+                result = compare_existing_rows(platform_options[0],df,df1)
 
-            st.write(result)
-            
-            res = convert_df(result)
-            
-            if res:
+                st.write(result)
                 
-                st.download_button(
-                label="Download results as CSV",
-                data=res,
-                key = 1,
-                file_name='Missing records.csv',
-                mime='text/csv',)
+                res = convert_df(result)
                 
+                if res:
+                    
+                    st.download_button(
+                    label="Download results as CSV",
+                    data=res,
+                    key = 1,
+                    file_name='Missing records.csv',
+                    mime='text/csv',)
+                    
+            except:
+                
+                st.warning("Please check the .csv files you have uploaded include the column headers in the first row with no special characters.")
+                    
                 
         with tab2:
             
