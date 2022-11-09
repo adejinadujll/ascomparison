@@ -59,9 +59,12 @@ def no_longer_listed(platform_options,df,df1):
 def compare_existing_rows(platform_options,df,df1):
     
     if platform_options == "Agents Society":
+        
+        if 'Details Last Confirmed' in df.columns:
     
-        df = df.drop(['Details Last Confirmed'], axis=1)
-        df1 = df1.drop(['Details Last Confirmed'], axis=1)
+            df = df.drop(['Details Last Confirmed'], axis=1)            
+            df1 = df1.drop(['Details Last Confirmed'], axis=1)
+    
         
         file_1_ids = df['Advert ID'].to_list()
         file_2_ids = df1['Advert ID'].to_list()
@@ -138,22 +141,24 @@ button[data-baseweb="tab"] {
 platform_options = st.multiselect(
     label = "Select Platform",
     options = ['Agents Society'],
+    # default = ["Select Platform"],
     )
 
-if platform_options :
+if platform_options:
+    
        if len(platform_options) > 1:
 
         st.warning("Please select 1 platform.")
 
 if len(platform_options) == 1:
-
+    
     try:
         uploaded_file_1 = st.file_uploader(label="Upload Initial File", key="upload1")
 
         if uploaded_file_1 is not None:
             
             df = pd.read_csv(uploaded_file_1,encoding="unicode_escape")
-            # df = df.fillna(0)
+
             with st.expander("See Uploaded Data"):
             
                 st.write(df)
@@ -174,13 +179,14 @@ if len(platform_options) == 1:
                 st.write(df1)
         
         if uploaded_file_1 is None and uploaded_file_2 is None:        
-            
+            st.warning("Ensure both uploaded files have identical column headers.")
             st.warning("Upload files in .csv format removing all special characters e.g. commas and pound signs.")
             
     except:
         
         st.write("Upload error.")
         
+  
     if uploaded_file_1 is not None and uploaded_file_2 is not None:
 
         st.write(tabs_font_css, unsafe_allow_html=True)
@@ -190,27 +196,27 @@ if len(platform_options) == 1:
             
             st.write("Use this tab to identify records which have been recently updated.")
             
-            # try:                
-            result = compare_existing_rows(platform_options[0],df,df1)
-            
-            result_1 = report_changes(result)
+            try:                
+                result = compare_existing_rows(platform_options[0],df,df1)
+                
+                result_1 = report_changes(result)
 
-            st.write(result_1)
-            
-            res = convert_df(result_1)
-            
-            if res:
+                st.write(result_1)
                 
-                st.download_button(
-                label="Download results as CSV",
-                data=res,
-                key = 1,
-                file_name='Missing records.csv',
-                mime='text/csv',)
+                res = convert_df(result_1)
+                
+                if res:
                     
-            # except:
+                    st.download_button(
+                    label="Download results as CSV",
+                    data=res,
+                    key = 1,
+                    file_name='Missing records.csv',
+                    mime='text/csv',)
+                        
+            except:
                 
-            #     st.warning("Please check the .csv files you have uploaded include the column headers in the first row with no special characters.")
+                st.warning("Please check the .csv files you have uploaded include the column headers in the first row with no special characters.")
                     
                 
         with tab2:
@@ -250,4 +256,4 @@ if len(platform_options) == 1:
                 key = 3,
                 file_name='Missing records.csv',
                 mime='text/csv',)
-                
+            
