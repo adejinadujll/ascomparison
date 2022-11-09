@@ -1,5 +1,6 @@
 import streamlit as st 
 import pandas as pd
+import numpy as np
 
 st.set_page_config(layout="wide")
 
@@ -82,6 +83,40 @@ def compare_existing_rows(platform_options,df,df1):
         
         return(changed)
 
+def report_changes(df):
+    df = df.fillna(0)
+    df['Column/s Changed'] = 0
+          
+    changed = []
+
+    df = df.reset_index()
+    
+    list_advert_ids = np.unique(df['Advert ID'].tolist())
+    
+    for each in list_advert_ids:
+        
+        data = df.loc[df['Advert ID'] == each]
+        
+        index = data.head(1).index[0]
+        index_1 = index+1
+        
+        columns_changed = []
+        
+        for each in df.columns:
+
+            if len(set(data[each].tolist())) > 1:
+                
+                columns_changed.append(each)
+   
+        data.loc[[index,index_1],'Column/s Changed'] = ",".join(columns_changed)
+     
+        changed.append(data)
+        
+    new_df = pd.concat(changed)
+    new_df = new_df.set_index("Column/s Changed")
+    return(new_df)
+
+
 @st.cache
 def convert_df(df):
     
@@ -118,7 +153,7 @@ if len(platform_options) == 1:
         if uploaded_file_1 is not None:
             
             df = pd.read_csv(uploaded_file_1,encoding="unicode_escape")
-                  
+            # df = df.fillna(0)
             with st.expander("See Uploaded Data"):
             
                 st.write(df)
@@ -155,25 +190,27 @@ if len(platform_options) == 1:
             
             st.write("Use this tab to identify records which have been recently updated.")
             
-            try:                
-                result = compare_existing_rows(platform_options[0],df,df1)
+            # try:                
+            result = compare_existing_rows(platform_options[0],df,df1)
+            
+            result_1 = report_changes(result)
 
-                st.write(result)
+            st.write(result_1)
+            
+            res = convert_df(result_1)
+            
+            if res:
                 
-                res = convert_df(result)
-                
-                if res:
+                st.download_button(
+                label="Download results as CSV",
+                data=res,
+                key = 1,
+                file_name='Missing records.csv',
+                mime='text/csv',)
                     
-                    st.download_button(
-                    label="Download results as CSV",
-                    data=res,
-                    key = 1,
-                    file_name='Missing records.csv',
-                    mime='text/csv',)
-                    
-            except:
+            # except:
                 
-                st.warning("Please check the .csv files you have uploaded include the column headers in the first row with no special characters.")
+            #     st.warning("Please check the .csv files you have uploaded include the column headers in the first row with no special characters.")
                     
                 
         with tab2:
