@@ -87,6 +87,7 @@ def compare_existing_rows(platform_options,df,df1):
         return(changed)
 
 def report_changes(df):
+    
     df = df.fillna(0)
     df['Column/s Changed'] = 0
           
@@ -125,8 +126,24 @@ def convert_df(df):
     
     return df.to_csv()
 
- 
-                   
+def remove_false_values(df):
+
+    error_values = [",","-","£","/","&","(",")",".","$","•","%","*","_","+","=","!","@","#",":",";","?","~","[","]","`","¬"]
+
+    for each in df.columns:
+        
+        for error in error_values:
+        
+            if df[each].dtype == object:
+                
+                df[each] = df[each].str.replace(error,"",regex=False)
+                
+            else:
+                
+                df[each] = df[each].replace(error,"")
+                
+    return(df)
+                    
 st.title("Agents Society Comparison Tool")
 
 tabs_font_css = """
@@ -158,6 +175,8 @@ if len(platform_options) == 1:
         if uploaded_file_1 is not None:
             
             df = pd.read_csv(uploaded_file_1,encoding="unicode_escape")
+            
+            df = remove_false_values(df)
 
             with st.expander("See Uploaded Data"):
             
@@ -169,10 +188,12 @@ if len(platform_options) == 1:
 
     try:
         uploaded_file_2 = st.file_uploader(label="Upload Comparison File",key="upload2")
-        
+       
         if uploaded_file_2 is not None:
         
             df1 = pd.read_csv(uploaded_file_2,encoding="unicode_escape")
+            
+            df1 = remove_false_values(df1)
 
             with st.expander("See Uploaded Data"):
             
@@ -180,7 +201,7 @@ if len(platform_options) == 1:
         
         if uploaded_file_1 is None and uploaded_file_2 is None:        
             st.warning("Ensure both uploaded files have identical column headers.")
-            st.warning("Upload files in .csv format removing all special characters e.g. commas and pound signs.")
+            st.warning("Remove all commas (,) before uploading files in .csv format to avoid upload errors.")
             
     except:
         
