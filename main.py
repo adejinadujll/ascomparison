@@ -174,7 +174,8 @@ if len(platform_options) == 1:
 
         if uploaded_file_1 is not None:
             
-            df = pd.read_csv(uploaded_file_1,encoding="latin1")
+#             df = pd.read_csv(uploaded_file_1,encoding="latin1")
+            df = pd.read_excel(uploaded_file_1)
             
             df = remove_false_values(df)
 
@@ -191,7 +192,8 @@ if len(platform_options) == 1:
        
         if uploaded_file_2 is not None:
         
-            df1 = pd.read_csv(uploaded_file_2,encoding="latin1")
+#             df1 = pd.read_csv(uploaded_file_2,encoding="latin1")
+            df1 = pd.read_excel(uploaded_file_2)
             
             df1 = remove_false_values(df1)
 
