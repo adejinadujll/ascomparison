@@ -1,6 +1,7 @@
 import streamlit as st 
 import pandas as pd
 import numpy as np
+import openpyxl 
 
 st.set_page_config(layout="wide")
 
@@ -175,7 +176,7 @@ if len(platform_options) == 1:
         if uploaded_file_1 is not None:
             
 #             df = pd.read_csv(uploaded_file_1,encoding="latin1")
-            df = pd.read_excel(uploaded_file_1)
+            df = pd.read_excel(uploaded_file_1,engine = 'openpyxl')
             
             df = remove_false_values(df)
 
