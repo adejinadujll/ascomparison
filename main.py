@@ -278,7 +278,7 @@ if platform_options == "Agents Society":
                     
     except:
         
-        st.error("Upload error.")
+        st.error("Upload error - Check the file type is xlsx and the first row are column headers.")
 
     try:
         uploaded_file_2 = st.file_uploader(label="Upload Comparison File",key="upload2")
@@ -294,11 +294,11 @@ if platform_options == "Agents Society":
                 st.write(df1)
         
         if uploaded_file_1 is None and uploaded_file_2 is None:        
-            st.warning("Ensure both uploaded xlsx files have identical column headers.")
+            st.warning("Ensure both uploaded .xlsx files have identical column headers.")
             
     except:
         uploaded_file_2 = None
-        st.error("Upload error.")
+        st.error("Upload error - Check the file type is xlsx and the first row are column headers.")
         
   
     if uploaded_file_1 is not None and uploaded_file_2 is not None:
@@ -330,7 +330,7 @@ if platform_options == "Agents Society":
                         
             except:
                 
-                st.warning("Please check the .csv files you have uploaded include the column headers in the first row with no special characters.")
+                st.warning("Please check the .xlsx files you have uploaded include the column headers in the first row.")
                     
                 
         with tab2:
@@ -392,7 +392,7 @@ elif platform_options == "CLH":
 
     except:
         uploaded_file_1 = None
-        st.error("Upload error.")     
+        st.error("Upload error - Check the file type is .xlsx and the first row are column headers.")     
   
     if uploaded_file_1 is not None:
 
@@ -410,9 +410,6 @@ elif platform_options == "CLH":
             cy = st.selectbox(
             'Select Year',
             (options),key=203)
-            
-            # with st.spinner('Calculating...'):
-            #         time.sleep(3)
             
             current = (CLH[CLH['Year Taken']==cy])
 
@@ -446,10 +443,6 @@ elif platform_options == "CLH":
             'Select Year',
             (options),key=200)
         
-        
-            # with st.spinner('Calculating...'):
-            #         time.sleep(3)
-            
             current = (CLH[CLH['Year Taken']==cy])
 
             current = current.reset_index(drop=True)
@@ -481,11 +474,7 @@ elif platform_options == "CLH":
             cy = st.selectbox(
             'Select Year',
             (options),key=201)
-        
-            
-            # with st.spinner('Calculating...'):
-            #         time.sleep(3)
-            
+
             current = (CLH[CLH['Year Taken']==cy])
 
             current = current.reset_index(drop=True)
