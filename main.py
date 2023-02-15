@@ -391,7 +391,7 @@ elif platform_options == "CLH":
                 st.write(CLH)
 
     except:
-        upload_file_1 = None
+        uploaded_file_1 = None
         st.write("Upload error.")     
   
     if uploaded_file_1 is not None:
