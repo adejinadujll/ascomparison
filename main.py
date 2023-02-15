@@ -30,68 +30,66 @@ button[data-baseweb="tab"] {
 
 def find_new_additions(platform_options,df,df1):
     
-    if platform_options == "Agents Society":
-        
-        file_1_ids = df['Advert ID'].to_list()
-        file_2_ids = df1['Advert ID'].to_list()
-        
-        new_records = (list(set(file_2_ids) - set(file_1_ids)))
-        
-        new_file = (df1.loc[df1['Advert ID'].isin(new_records)])
-        
-        new_file = new_file.set_index("Advert ID")
+    file_1_ids = df['Advert ID'].to_list()
+    file_2_ids = df1['Advert ID'].to_list()
     
-        return(new_file)
+    new_records = (list(set(file_2_ids) - set(file_1_ids)))
+    
+    new_file = (df1.loc[df1['Advert ID'].isin(new_records)])
+    
+    new_file = new_file.set_index("Advert ID")
+
+    return(new_file)
     
     
 def no_longer_listed(platform_options,df,df1):
+
+    file_1_ids = df['Advert ID'].to_list()
+    file_2_ids = df1['Advert ID'].to_list()
     
-    if platform_options == "Agents Society":
+    missing_records = (list(set(file_1_ids) - set(file_2_ids)))
     
-        file_1_ids = df['Advert ID'].to_list()
-        file_2_ids = df1['Advert ID'].to_list()
-        
-        missing_records = (list(set(file_1_ids) - set(file_2_ids)))
-        
-        new_file = (df.loc[df['Advert ID'].isin(missing_records)])
-        
-        new_file = new_file.set_index("Advert ID")
-        
-        return(new_file)
+    new_file = (df.loc[df['Advert ID'].isin(missing_records)])
     
+    new_file = new_file.set_index("Advert ID")
+    
+    return(new_file)
+
    
 def compare_existing_rows(platform_options,df,df1):
     
-    if platform_options == "Agents Society":
-        
-        if 'Details Last Confirmed' in df.columns:
-    
-            df = df.drop(['Details Last Confirmed'], axis=1)            
-            df1 = df1.drop(['Details Last Confirmed'], axis=1)
-    
-        
-        file_1_ids = df['Advert ID'].to_list()
-        file_2_ids = df1['Advert ID'].to_list()
-        
-        existing_records = (list(set(file_1_ids).intersection(file_2_ids)))
+    if 'Details Last Confirmed' in df.columns:
 
-        new_file1 = (df.loc[df['Advert ID'].isin(existing_records)])
-        new_file2 = (df1.loc[df1['Advert ID'].isin(existing_records)])
+        df = df.drop(['Details Last Confirmed'], axis=1)            
+        df1 = df1.drop(['Details Last Confirmed'], axis=1)
+
+    if 'Summary' in df.columns:
+    
+        df = df.drop(['Summary'], axis=1)            
+        df1 = df1.drop(['Summary'], axis=1)
+    
+    file_1_ids = df['Advert ID'].to_list()
+    file_2_ids = df1['Advert ID'].to_list()
         
-        df = pd.concat([new_file1, new_file2])
-        df = df.reset_index(drop=True)
-        df_gpby = df.groupby(list(df.columns))
-        
-        idx = [x[0] for x in df_gpby.groups.values() if len(x) == 1]
-        
-        changed = df.reindex(idx)
-        
-        changed = changed.set_index("Advert ID")
-        
-        return(changed)
+    existing_records = (list(set(file_1_ids).intersection(file_2_ids)))
+
+    new_file1 = (df.loc[df['Advert ID'].isin(existing_records)])
+    new_file2 = (df1.loc[df1['Advert ID'].isin(existing_records)])
+    
+    df = pd.concat([new_file1, new_file2])
+    df = df.reset_index(drop=True)
+    df_gpby = df.groupby(list(df.columns))
+    
+    idx = [x[0] for x in df_gpby.groups.values() if len(x) == 1]
+    
+    changed = df.reindex(idx)
+    
+    changed = changed.set_index("Advert ID")
+    
+    return(changed)
 
 def report_changes(df):
-    
+
     df = df.fillna(0)
     df['Column/s Changed'] = 0
           
@@ -169,9 +167,9 @@ def disp_acq_tables(current):
         
 
     disp = pd.DataFrame.from_dict(data_disposed,orient="index").sort_values(0,ascending=False).reset_index().dropna()
-    disp.rename(columns = {'index':'Agency', 0:'Size'}, inplace = True)
+    disp.rename(columns = {'index':'Agency', 0:'Total Sq Ft'}, inplace = True)
     acq = pd.DataFrame.from_dict(data_acquired,orient="index").sort_values(0,ascending=False).reset_index().dropna()
-    acq.rename(columns = {'index':'Agency', 0:'Size'}, inplace = True)
+    acq.rename(columns = {'index':'Agency', 0:'Total Sq Ft'}, inplace = True)
     return(disp,acq)
 
 
@@ -217,7 +215,7 @@ def combined_tables(current):
         
 
     both = pd.DataFrame.from_dict(data,orient="index").sort_values(0,ascending=False).reset_index().dropna()
-    both.rename(columns = {'index':'Agency', 0:'Size'}, inplace = True)
+    both.rename(columns = {'index':'Agency', 0:'Total Sq Ft'}, inplace = True)
     return(both)
     
 
@@ -232,6 +230,11 @@ def upload_as(data):
     df = pd.read_excel(data)
     
     return(df)
+
+@st.cache
+def upload_as2(data):
+    
+    return(pd.read_excel(data))
 
 @st.cache
 def upload_clh(data):
@@ -294,7 +297,7 @@ if platform_options == "Agents Society":
 
         if uploaded_file_1 is not None:
             
-            df = upload_as(uploaded_file_1)
+            df = pd.read_excel(uploaded_file_1)
 
             with st.expander("See Uploaded Data"):
             
@@ -309,7 +312,7 @@ if platform_options == "Agents Society":
        
         if uploaded_file_2 is not None:
         
-            df1 = upload_as(uploaded_file_2)
+            df1 = pd.read_excel(uploaded_file_2)
 
             with st.expander("See Uploaded Data"):
             
@@ -332,27 +335,27 @@ if platform_options == "Agents Society":
             
             st.write("Use this tab to identify records which have been recently updated.")
             
-            try:                
-                result = compare_existing_rows(platform_options[0],df,df1)
-                
-                result_1 = report_changes(result)
-
+            # try:        
+                                 
+            result = compare_existing_rows(platform_options[0],df,df1)
+            result_1 = report_changes(result)
+            
+            if len(result_1) > 0:
                 st.write(result_1)
+                time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+                st.download_button(
+                label="Download",
+                data=result_1,
+                key = 1,
+                file_name=f'Updated records at {time_string}.csv',
+                mime="text/csv")
                 
-                res = upload_as(result_1)
-                
-                if res:
-                    
-                    st.download_button(
-                    label="Download results as CSV",
-                    data=res,
-                    key = 1,
-                    file_name='Missing records.csv',
-                    mime='text/csv',)
+            else:
+                st.write("No results.")
                         
-            except:
+            # except:
                 
-                st.warning("Please check the .xlsx files you have uploaded include the column headers in the first row.")
+            #     st.warning("Please check the .xlsx files you have uploaded include the column headers in the first row.")
                     
                 
         with tab2:
@@ -360,38 +363,37 @@ if platform_options == "Agents Society":
             st.write("Use this tab to identify records which have been recently added.")
                 
             result = find_new_additions(platform_options[0],df,df1)
-
-            st.write(result)
             
-            res = upload_as(result)
-            
-            if res:
-                
+            if len(result) > 0:
+                st.write(result)
+                time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
                 st.download_button(
-                label="Download results as CSV",
-                data=res,
+                label="Download",
+                data=result.to_csv(index=False).encode('latin-1'),
                 key = 2,
-                file_name='Missing records.csv',
-                mime='text/csv',)
+                file_name=f'Missing records at {time_string}.csv',
+                mime="text/csv")
+            else:
+                st.write("No results.")
                 
         with tab3:
             
             st.write("Use this tab to identify records which have been recently removed.")
     
             result = no_longer_listed(platform_options[0],df,df1)
-
-            st.write(result)
-            
-            res = upload_as(result)
-            
-            if res:
-            
+                        
+            if len(result) > 0:
+                st.write(result)
+                time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
                 st.download_button(
-                label="Download results as CSV",
-                data=res,
+                label="Download",
+                data=result.to_csv(index=False).encode('latin-1'),
                 key = 3,
-                file_name='Missing records.csv',
-                mime='text/csv',)
+                file_name=f'Removed records at {time_string}.csv',
+                mime="text/csv")
+                
+            else:
+                st.write("No results.")
             
 elif platform_options == "Central London Hub":
     
@@ -432,12 +434,10 @@ elif platform_options == "Central London Hub":
             if m == "All":
                 
                 current = (CLH[CLH['Year Taken']==cy])
-                JLL = (CLH[(CLH['Agent 1']=="JLL") & (CLH['Lessee Agent'] == "JLL")])
                 
             else:
                 
                 current = (CLH[(CLH['Year Taken']==cy) & (CLH['Sub Market']==m)])
-                JLL = (CLH[(CLH['Agent 1']=="JLL") & (CLH['Lessee Agent'] == "JLL") & (CLH['Sub Market']==m)]['Year Taken',])
             
             
             if len(current) > 0:
@@ -453,12 +453,12 @@ elif platform_options == "Central London Hub":
                 res = convert_df(final)
                     
                 if res:
-                    
+                    time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
                     st.download_button(
-                    label="Download League Table as CSV",
+                    label="Download",
                     data=res,
                     key = 100,
-                    file_name='Combined League Table.csv',
+                    file_name=f'Combined League Table at {time_string}.csv',
                     mime='text/csv',)
             
             else:
@@ -501,13 +501,13 @@ elif platform_options == "Central London Hub":
                 res = convert_df(final_disp)
                     
                 if res:
-                    
+                    time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
                     st.download_button(
-                    label="Download League Table as CSV",
+                    label="Download",
                     data=res,
                     key = 101,
-                    file_name='Disposal League Table.csv',
-                    mime='text/csv',)
+                    file_name=f'Disposal League Table at {time_string}.csv',
+                    mime="text/csv",)
                     
             else:
                 
@@ -549,13 +549,13 @@ elif platform_options == "Central London Hub":
                 res = convert_df(final_acq)
                     
                 if res:
-                    
+                    time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
                     st.download_button(
-                    label="Download League Table as CSV",
+                    label="Download",
                     data=res,
-                    key = 1,
-                    file_name='Acquisition League Table.csv',
-                    mime='text/csv',)
+                    key = 1000,
+                    file_name=f'Acquisition League Table at {time_string}.csv',
+                    mime="text/csv")
                     
             else:
                 
