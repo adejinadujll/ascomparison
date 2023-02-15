@@ -337,25 +337,25 @@ if platform_options == "Agents Society":
             
             try:        
                                  
-            result = compare_existing_rows(platform_options[0],df,df1)
-            result_1 = report_changes(result)
-            
-                if len(result_1) > 0:
-                    st.write(result_1)
-                    time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-    #                 st.download_button(
-    #                 label="Download",
-    #                 data=result_1,
-    #                 key = 1,
-    #                 file_name=f'Updated records at {time_string}.csv',
-    #                 mime="text/csv")
+                result = compare_existing_rows(platform_options[0],df,df1)
+                result_1 = report_changes(result)
 
-                else:
-                    st.write("No results.")
-                        
-            except:
-                
-                st.warning("Please check the .xlsx files you have uploaded include the column headers in the first row.")
+                    if len(result_1) > 0:
+                        st.write(result_1)
+                        time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        #                 st.download_button(
+        #                 label="Download",
+        #                 data=result_1,
+        #                 key = 1,
+        #                 file_name=f'Updated records at {time_string}.csv',
+        #                 mime="text/csv")
+
+                    else:
+                        st.write("No results.")
+
+                except:
+
+                    st.warning("Please check the .xlsx files you have uploaded include the column headers in the first row.")
                     
                 
         with tab2:
