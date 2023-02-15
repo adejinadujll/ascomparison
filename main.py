@@ -244,7 +244,7 @@ def remove_false_values(df):
                 
     return(df)
                     
-st.title("Agents Society Comparison Tool")
+st.title("CLSE Data Tools")
 
 tabs_font_css = """
 <style>
