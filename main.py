@@ -432,12 +432,10 @@ elif platform_options == "Central London Hub":
             if m == "All":
                 
                 current = (CLH[CLH['Year Taken']==cy])
-                JLL = (CLH[(CLH['Agent 1']=="JLL") & (CLH['Lessee Agent'] == "JLL")])
                 
             else:
                 
                 current = (CLH[(CLH['Year Taken']==cy) & (CLH['Sub Market']==m)])
-                JLL = (CLH[(CLH['Agent 1']=="JLL") & (CLH['Lessee Agent'] == "JLL") & (CLH['Sub Market']==m)]['Year Taken',])
             
             
             if len(current) > 0:
