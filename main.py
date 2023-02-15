@@ -338,13 +338,14 @@ if platform_options == "Agents Society":
                 result_1 = report_changes(result)
 
                 st.write(result_1)
-            
                 
-                if result_1:
+                res = upload_as(result_1)
+                
+                if res:
                     
                     st.download_button(
                     label="Download results as CSV",
-                    data=result_1,
+                    data=res,
                     key = 1,
                     file_name='Missing records.csv',
                     mime='text/csv',)
@@ -361,12 +362,14 @@ if platform_options == "Agents Society":
             result = find_new_additions(platform_options[0],df,df1)
 
             st.write(result)
-                        
-            if result:
+            
+            res = upload_as(result)
+            
+            if res:
                 
                 st.download_button(
                 label="Download results as CSV",
-                data=result,
+                data=res,
                 key = 2,
                 file_name='Missing records.csv',
                 mime='text/csv',)
@@ -378,12 +381,14 @@ if platform_options == "Agents Society":
             result = no_longer_listed(platform_options[0],df,df1)
 
             st.write(result)
-                        
-            if result:
+            
+            res = upload_as(result)
+            
+            if res:
             
                 st.download_button(
                 label="Download results as CSV",
-                data=result,
+                data=res,
                 key = 3,
                 file_name='Missing records.csv',
                 mime='text/csv',)
@@ -391,7 +396,7 @@ if platform_options == "Agents Society":
 elif platform_options == "Central London Hub":
     
     try:
-        uploaded_file_1 = st.file_uploader(label="Upload .xlsx File", key="upload1")
+        uploaded_file_1 = st.file_uploader(label="Upload File", key="upload1")
 
         if uploaded_file_1 is not None:
         
