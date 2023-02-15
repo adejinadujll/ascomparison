@@ -1,6 +1,11 @@
 import streamlit as st 
 import pandas as pd
 import numpy as np
+import openpyxl 
+import time 
+import datetime
+
+pd.options.display.float_format = '{:,.0f}'.format
 
 st.set_page_config(layout="wide")
 
@@ -121,6 +126,102 @@ def report_changes(df):
     return(new_df)
 
 
+def disp_acq_tables(current):
+    
+    last = current.last_valid_index() + 1
+
+    data_disposed = {}
+    data_acquired = {}
+
+
+    for ind in range(last):
+        
+        if current['Agent 1'].loc[ind] not in data_disposed.keys():
+            
+            data_disposed.update({current['Agent 1'].loc[ind]:current['Total ft 2'].loc[ind]})
+            
+        else:
+            
+            data_disposed.update({current['Agent 1'].loc[ind]:current['Total ft 2'].loc[ind]+data_disposed[current['Agent 1'].loc[ind]]})
+            
+        if current['Agent 2'].loc[ind] not in data_disposed.keys():
+            
+            data_disposed.update({current['Agent 2'].loc[ind]:current['Total ft 2'].loc[ind]})
+            
+        else:
+            
+            data_disposed.update({current['Agent 2'].loc[ind]:current['Total ft 2'].loc[ind]+data_disposed[current['Agent 2'].loc[ind]]})
+            
+        if current['Agent 3'].loc[ind] not in data_disposed.keys():
+            
+            data_disposed.update({current['Agent 3'].loc[ind]:current['Total ft 2'].loc[ind]})
+            
+        else:
+            
+            data_disposed.update({current['Agent 3'].loc[ind]:current['Total ft 2'].loc[ind]+data_disposed[current['Agent 3'].loc[ind]]})
+            
+        if current['Lessee Agent'].loc[ind] not in data_acquired.keys():
+            
+            data_acquired.update({current['Lessee Agent'].loc[ind]:current['Total ft 2'].loc[ind]})
+            
+        else:
+            
+            data_acquired.update({current['Lessee Agent'].loc[ind]:current['Total ft 2'].loc[ind]+data_acquired[current['Lessee Agent'].loc[ind]]})
+        
+
+    disp = pd.DataFrame.from_dict(data_disposed,orient="index").sort_values(0,ascending=False).reset_index().dropna()
+    disp.rename(columns = {'index':'Agency', 0:'Size'}, inplace = True)
+    acq = pd.DataFrame.from_dict(data_acquired,orient="index").sort_values(0,ascending=False).reset_index().dropna()
+    acq.rename(columns = {'index':'Agency', 0:'Size'}, inplace = True)
+    return(disp,acq)
+
+
+def combined_tables(current):
+    
+    last = current.last_valid_index() + 1
+
+    data = {}
+
+    for ind in range(last):
+        
+        if current['Agent 1'].loc[ind] not in data.keys():
+            
+            data.update({current['Agent 1'].loc[ind]:current['Total ft 2'].loc[ind]})
+            
+        else:
+            
+            data.update({current['Agent 1'].loc[ind]:current['Total ft 2'].loc[ind]+data[current['Agent 1'].loc[ind]]})
+            
+        if current['Agent 2'].loc[ind] not in data.keys():
+            
+            data.update({current['Agent 2'].loc[ind]:current['Total ft 2'].loc[ind]})
+            
+        else:
+            
+            data.update({current['Agent 2'].loc[ind]:current['Total ft 2'].loc[ind]+data[current['Agent 2'].loc[ind]]})
+            
+        if current['Agent 3'].loc[ind] not in data.keys():
+            
+            data.update({current['Agent 3'].loc[ind]:current['Total ft 2'].loc[ind]})
+            
+        else:
+            
+            data.update({current['Agent 3'].loc[ind]:current['Total ft 2'].loc[ind]+data[current['Agent 3'].loc[ind]]})
+            
+        if current['Lessee Agent'].loc[ind] not in data.keys():
+            
+            data.update({current['Lessee Agent'].loc[ind]:current['Total ft 2'].loc[ind]})
+            
+        else:
+            
+            data.update({current['Lessee Agent'].loc[ind]:current['Total ft 2'].loc[ind]+data[current['Lessee Agent'].loc[ind]]})
+        
+
+    both = pd.DataFrame.from_dict(data,orient="index").sort_values(0,ascending=False).reset_index().dropna()
+    both.rename(columns = {'index':'Agency', 0:'Size'}, inplace = True)
+    return(both)
+    
+
 @st.cache
 def convert_df(df):
     
@@ -155,29 +256,22 @@ button[data-baseweb="tab"] {
 """
 
 
-platform_options = st.multiselect(
+platform_options = st.selectbox(
     label = "Select Platform",
-    options = ['Agents Society'],
-    # default = ["Select Platform"],
+    options = ['Agents Society','CLH'],
     )
 
-if platform_options:
-    
-       if len(platform_options) > 1:
 
-        st.warning("Please select 1 platform.")
-
-if len(platform_options) == 1:
+if platform_options == "Agents Society":
     
     try:
         uploaded_file_1 = st.file_uploader(label="Upload Initial File", key="upload1")
 
         if uploaded_file_1 is not None:
             
-#             df = pd.read_csv(uploaded_file_1,encoding="latin1")
             df = pd.read_excel(uploaded_file_1)
             
-            df = remove_false_values(df)
+            # df = remove_false_values(df)
 
             with st.expander("See Uploaded Data"):
             
@@ -192,17 +286,16 @@ if len(platform_options) == 1:
        
         if uploaded_file_2 is not None:
         
-            df1 = pd.read_csv(uploaded_file_2,encoding="latin1")
+            df1 = pd.read_excel(uploaded_file_2)
             
-            df1 = remove_false_values(df1)
+            # df1 = remove_false_values(df1)
 
             with st.expander("See Uploaded Data"):
             
                 st.write(df1)
         
         if uploaded_file_1 is None and uploaded_file_2 is None:        
-            st.warning("Ensure both uploaded files have identical column headers.")
-            st.warning("Remove all commas (,) before uploading files in .csv format to avoid upload errors.")
+            st.warning("Ensure both uploaded xlsx files have identical column headers.")
             
     except:
         
@@ -279,3 +372,141 @@ if len(platform_options) == 1:
                 file_name='Missing records.csv',
                 mime='text/csv',)
             
+elif platform_options == "CLH":
+    
+    try:
+        uploaded_file_1 = st.file_uploader(label="Upload Initial File", key="upload1")
+
+        if uploaded_file_1 is not None:
+            
+            CLH = pd.read_excel(uploaded_file_1)
+                        
+            CLH['Date Taken'] = pd.to_datetime(CLH['Date Taken'],format="%Y-%m-%d")
+
+            CLH['Year Taken'] = CLH['Date Taken'].dt.year
+            
+            CLH = CLH[(CLH["Lease Status"] == "Let") & (CLH["Year Taken"] != 2222)]
+                                    
+            with st.expander("See Uploaded Data"):
+            
+                st.write(CLH)
+                    
+    except:
+        
+        st.write("Upload error.")     
+  
+    if uploaded_file_1 is not None:
+
+        st.write(tabs_font_css, unsafe_allow_html=True)
+        tab1, tab2, tab3 = st.tabs(["   Combined League Table  ", "   Disposal League Table   ", "   Acquistion League Table   "])
+        
+        with tab1:
+            
+            st.write("Use this tab to generate a combined (disposal & acquisition) league table based on the uploaded CLH file.")
+            
+            options_i = np.unique(CLH['Year Taken'].tolist())
+            options = [int(float(x)) for x in options_i]
+            options.sort(reverse=True)
+            
+            cy = st.selectbox(
+            'Select Year',
+            (options),key=203)
+            
+            # with st.spinner('Calculating...'):
+            #         time.sleep(3)
+            
+            current = (CLH[CLH['Year Taken']==cy])
+
+            current = current.reset_index(drop=True)
+
+            final = combined_tables(current)
+            
+            st.table(data=final.style.format(thousands=",", precision=0))
+                        
+            res = convert_df(final)
+                
+            if res:
+                
+                st.download_button(
+                label="Download results as CSV",
+                data=res,
+                key = 100,
+                file_name='Combined League Table.csv',
+                mime='text/csv',)
+                    
+                        
+        with tab2:
+        
+            st.write("Use this tab to generate a disposal league table based on the uploaded CLH file.")
+            
+            options_i = np.unique(CLH['Year Taken'].tolist())
+            options = [int(float(x)) for x in options_i]
+            options.sort(reverse=True)
+            
+            cy = st.selectbox(
+            'Select Year',
+            (options),key=200)
+        
+        
+            # with st.spinner('Calculating...'):
+            #         time.sleep(3)
+            
+            current = (CLH[CLH['Year Taken']==cy])
+
+            current = current.reset_index(drop=True)
+
+            final = disp_acq_tables(current)
+            
+            st.table(data=final[0].style.format(thousands=",", precision=0))
+            
+            res = convert_df(final[0])
+                
+            if res:
+                
+                st.download_button(
+                label="Download results as CSV",
+                data=res,
+                key = 101,
+                file_name='Disposal League Table.csv',
+                mime='text/csv',)
+            
+                        
+        with tab3:
+        
+            st.write("Use this tab to generate an acquisiton league table based on the uploaded CLH file.")
+            
+            options_i = np.unique(CLH['Year Taken'].tolist())
+            options = [int(float(x)) for x in options_i]
+            options.sort(reverse=True)
+            
+            cy = st.selectbox(
+            'Select Year',
+            (options),key=201)
+        
+            
+            # with st.spinner('Calculating...'):
+            #         time.sleep(3)
+            
+            current = (CLH[CLH['Year Taken']==cy])
+
+            current = current.reset_index(drop=True)
+
+            final = disp_acq_tables(current)
+            
+            st.table(data=final[1].style.format(thousands=",", precision=0))
+            
+            res = convert_df(final[1])
+                
+            if res:
+                
+                st.download_button(
+                label="Download results as CSV",
+                data=res,
+                key = 1,
+                file_name='Acquisition League Table.csv',
+                mime='text/csv',)
+
+
+                
+                
+
