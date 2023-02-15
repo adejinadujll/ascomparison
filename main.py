@@ -402,8 +402,8 @@ elif platform_options == "CLH":
         with tab1:
             
             st.write("Use this tab to generate a combined (disposal & acquisition) league table based on the uploaded CLH file.")
-            
-            options_i = np.unique(CLH['Year Taken'].tolist())
+            a= CLH['Year Taken'].tolist()
+            options_i = np.unique(a)
             options = [int(float(x)) for x in options_i]
             options.sort(reverse=True)
             
