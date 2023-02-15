@@ -278,7 +278,7 @@ if platform_options == "Agents Society":
                     
     except:
         
-        st.write("Upload error.")
+        st.error("Upload error.")
 
     try:
         uploaded_file_2 = st.file_uploader(label="Upload Comparison File",key="upload2")
@@ -298,7 +298,7 @@ if platform_options == "Agents Society":
             
     except:
         uploaded_file_2 = None
-        st.write("Upload error.")
+        st.error("Upload error.")
         
   
     if uploaded_file_1 is not None and uploaded_file_2 is not None:
@@ -392,7 +392,7 @@ elif platform_options == "CLH":
 
     except:
         uploaded_file_1 = None
-        st.write("Upload error.")     
+        st.error("Upload error.")     
   
     if uploaded_file_1 is not None:
 
