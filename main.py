@@ -290,7 +290,7 @@ platform_options = st.selectbox(
 if platform_options == "Agents Society":
     
     try:
-        uploaded_file_1 = st.file_uploader(label="Upload Initial File", key="upload1")
+        uploaded_file_1 = st.file_uploader(label="Upload Initial .xlsx File", key="upload1")
 
         if uploaded_file_1 is not None:
             
@@ -305,7 +305,7 @@ if platform_options == "Agents Society":
         st.error("Upload error - Check the file type is xlsx and the first row are column headers.")
 
     try:
-        uploaded_file_2 = st.file_uploader(label="Upload Comparison File",key="upload2")
+        uploaded_file_2 = st.file_uploader(label="Upload Comparison .xlsx File",key="upload2")
        
         if uploaded_file_2 is not None:
         
@@ -396,7 +396,7 @@ if platform_options == "Agents Society":
 elif platform_options == "Central London Hub":
     
     try:
-        uploaded_file_1 = st.file_uploader(label="Upload File", key="upload1")
+        uploaded_file_1 = st.file_uploader(label="Upload .xlsx File", key="upload1")
 
         if uploaded_file_1 is not None:
         
@@ -432,10 +432,12 @@ elif platform_options == "Central London Hub":
             if m == "All":
                 
                 current = (CLH[CLH['Year Taken']==cy])
+                JLL = (CLH[(CLH['Agent 1']=="JLL") & (CLH['Lessee Agent'] == "JLL")])
                 
             else:
                 
                 current = (CLH[(CLH['Year Taken']==cy) & (CLH['Sub Market']==m)])
+                JLL = (CLH[(CLH['Agent 1']=="JLL") & (CLH['Lessee Agent'] == "JLL") & (CLH['Sub Market']==m)]['Year Taken',])
             
             
             if len(current) > 0:
