@@ -335,65 +335,65 @@ if platform_options == "Agents Society":
             
             st.write("Use this tab to identify records which have been recently updated.")
             
-            # try:        
+            try:        
                                  
             result = compare_existing_rows(platform_options[0],df,df1)
             result_1 = report_changes(result)
             
-            if len(result_1) > 0:
-                st.write(result_1)
+                if len(result_1) > 0:
+                    st.write(result_1)
+                    time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    #                 st.download_button(
+    #                 label="Download",
+    #                 data=result_1,
+    #                 key = 1,
+    #                 file_name=f'Updated records at {time_string}.csv',
+    #                 mime="text/csv")
+
+                else:
+                    st.write("No results.")
+                        
+            except:
+                
+                st.warning("Please check the .xlsx files you have uploaded include the column headers in the first row.")
+                    
+                
+        with tab2:
+            
+            st.write("Use this tab to identify records which have been recently added.")
+                
+            result = find_new_additions(platform_options[0],df,df1)
+            
+            if len(result) > 0:
+                st.write(result)
                 time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
 #                 st.download_button(
 #                 label="Download",
-#                 data=result_1,
-#                 key = 1,
-#                 file_name=f'Updated records at {time_string}.csv',
+#                 data=result.to_csv(index=False).encode('latin-1'),
+#                 key = 2,
+#                 file_name=f'Missing records at {time_string}.csv',
+#                 mime="text/csv")
+            else:
+                st.write("No results.")
+                
+        with tab3:
+            
+            st.write("Use this tab to identify records which have been recently removed.")
+    
+            result = no_longer_listed(platform_options[0],df,df1)
+                        
+            if len(result) > 0:
+                st.write(result)
+                time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+#                 st.download_button(
+#                 label="Download",
+#                 data=result.to_csv(index=False).encode('latin-1'),
+#                 key = 3,
+#                 file_name=f'Removed records at {time_string}.csv',
 #                 mime="text/csv")
                 
             else:
                 st.write("No results.")
-                        
-            # except:
-                
-            #     st.warning("Please check the .xlsx files you have uploaded include the column headers in the first row.")
-                    
-                
-        # with tab2:
-            
-        #     st.write("Use this tab to identify records which have been recently added.")
-                
-        #     result = find_new_additions(platform_options[0],df,df1)
-            
-        #     if len(result) > 0:
-        #         st.write(result)
-        #         time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        #         st.download_button(
-        #         label="Download",
-        #         data=result.to_csv(index=False).encode('latin-1'),
-        #         key = 2,
-        #         file_name=f'Missing records at {time_string}.csv',
-        #         mime="text/csv")
-        #     else:
-        #         st.write("No results.")
-                
-        # with tab3:
-            
-        #     st.write("Use this tab to identify records which have been recently removed.")
-    
-        #     result = no_longer_listed(platform_options[0],df,df1)
-                        
-        #     if len(result) > 0:
-        #         st.write(result)
-        #         time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        #         st.download_button(
-        #         label="Download",
-        #         data=result.to_csv(index=False).encode('latin-1'),
-        #         key = 3,
-        #         file_name=f'Removed records at {time_string}.csv',
-        #         mime="text/csv")
-                
-        #     else:
-        #         st.write("No results.")
             
 elif platform_options == "Central London Hub":
     
