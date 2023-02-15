@@ -257,7 +257,7 @@ button[data-baseweb="tab"] {
 
 platform_options = st.selectbox(
     label = "Select Platform",
-    options = ['Agents Society','CLH'],
+    options = ['Agents Society','Central London Hub'],
     )
 
 
@@ -371,7 +371,7 @@ if platform_options == "Agents Society":
                 file_name='Missing records.csv',
                 mime='text/csv',)
             
-elif platform_options == "CLH":
+elif platform_options == "Central London Hub":
     
     try:
         uploaded_file_1 = st.file_uploader(label="Upload File", key="upload1")
