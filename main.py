@@ -226,23 +226,49 @@ def convert_df(df):
     
     return df.to_csv()
 
-def remove_false_values(df):
-
-    error_values = [",","-","£","/","&","(",")",".","$","•","%","*","_","+","=","!","@","#",":",";","?","~","[","]","`","¬"]
-
-    for each in df.columns:
-        
-        for error in error_values:
-        
-            if df[each].dtype == object:
-                
-                df[each] = df[each].str.replace(error,"",regex=False)
-                
-            else:
-                
-                df[each] = df[each].replace(error,"")
-                
+@st.cache
+def upload_as(data):
+    
+    df = pd.read_excel(data)
+    
     return(df)
+
+@st.cache
+def upload_clh(data):
+
+    CLH = pd.read_excel(data)
+                        
+    CLH['Date Taken'] = pd.to_datetime(CLH['Date Taken'],format="%Y-%m-%d")
+
+    CLH['Year Taken'] = CLH['Date Taken'].dt.year
+    
+    CLH = CLH[(CLH["Lease Status"] == "Let") & (CLH["Year Taken"] != 2222)]
+                                
+    return(CLH)
+
+def selections(CLH):
+    
+    yt= CLH['Year Taken'].tolist()
+    
+    options_i = np.unique(yt)
+    options = [int(float(x)) for x in options_i]
+    options.sort(reverse=True)
+    
+    markets = list(np.unique(CLH['Sub Market']))
+    markets.insert(0, "All")
+    
+    return(options,markets)
+
+def JLL_performance(JLL):
+    
+    pd.options.display.float_format = '{:.0f}'.format
+    
+    data = JLL[['Year Taken','Total ft 2']].groupby(['Year Taken']).sum()
+    
+    data = data.tail(10)   
+    
+    return(data)
+
                     
 st.title("CLSE Data Tools")
 
@@ -268,9 +294,7 @@ if platform_options == "Agents Society":
 
         if uploaded_file_1 is not None:
             
-            df = pd.read_excel(uploaded_file_1)
-            
-            # df = remove_false_values(df)
+            df = upload_as(uploaded_file_1)
 
             with st.expander("See Uploaded Data"):
             
@@ -285,9 +309,7 @@ if platform_options == "Agents Society":
        
         if uploaded_file_2 is not None:
         
-            df1 = pd.read_excel(uploaded_file_2)
-            
-            # df1 = remove_false_values(df1)
+            df1 = upload_as(uploaded_file_2)
 
             with st.expander("See Uploaded Data"):
             
@@ -377,19 +399,13 @@ elif platform_options == "Central London Hub":
         uploaded_file_1 = st.file_uploader(label="Upload File", key="upload1")
 
         if uploaded_file_1 is not None:
-
-            CLH = pd.read_excel(uploaded_file_1)
-
-            CLH['Date Taken'] = pd.to_datetime(CLH['Date Taken'],format="%Y-%m-%d")
-
-            CLH['Year Taken'] = CLH['Date Taken'].dt.year
-
-            CLH = CLH[(CLH["Lease Status"] == "Let") & (CLH["Year Taken"] != 2222)]
-
+        
+            CLH = upload_clh(uploaded_file_1)
+                                    
             with st.expander("See Uploaded Data"):
-
+            
                 st.write(CLH)
-
+            
     except:
         uploaded_file_1 = None
         st.error("Upload error - Check the file type is .xlsx and the first row are column headers.")     
@@ -402,99 +418,149 @@ elif platform_options == "Central London Hub":
         with tab1:
             
             st.write("Use this tab to generate a combined (disposal & acquisition) league table based on the uploaded CLH file.")
-            a= CLH['Year Taken'].tolist()
-            options_i = np.unique(a)
-            options = [int(float(x)) for x in options_i]
-            options.sort(reverse=True)
+            
+            options = selections(CLH)
             
             cy = st.selectbox(
             'Select Year',
-            (options),key=203)
+            (options[0]),key=203)
             
-            current = (CLH[CLH['Year Taken']==cy])
-
-            current = current.reset_index(drop=True)
-
-            final = combined_tables(current)
+            m = st.selectbox(
+            'Select Submarket',
+            (options[1]),key=210)
             
-            st.table(data=final.style.format(thousands=",", precision=0))
-                        
-            res = convert_df(final)
+            if m == "All":
                 
-            if res:
+                current = (CLH[CLH['Year Taken']==cy])
+                JLL = (CLH[(CLH['Agent 1']=="JLL") & (CLH['Lessee Agent'] == "JLL")])
                 
-                st.download_button(
-                label="Download results as CSV",
-                data=res,
-                key = 100,
-                file_name='Combined League Table.csv',
-                mime='text/csv',)
+            else:
+                
+                current = (CLH[(CLH['Year Taken']==cy) & (CLH['Sub Market']==m)])
+                JLL = (CLH[(CLH['Agent 1']=="JLL") & (CLH['Lessee Agent'] == "JLL") & (CLH['Sub Market']==m)]['Year Taken',])
+            
+            
+            if len(current) > 0:
+                    
+                current = current.reset_index(drop=True)
+            
+                final = combined_tables(current)
+                                
+                final.index = np.arange(1, len(final) + 1)
+   
+                st.table(data=final.style.format(thousands=",", precision=0))
+                            
+                res = convert_df(final)
+                    
+                if res:
+                    
+                    st.download_button(
+                    label="Download League Table as CSV",
+                    data=res,
+                    key = 100,
+                    file_name='Combined League Table.csv',
+                    mime='text/csv',)
+            
+            else:
+                
+                st.write("No results.")
                     
                         
         with tab2:
         
             st.write("Use this tab to generate a disposal league table based on the uploaded CLH file.")
             
-            options_i = np.unique(CLH['Year Taken'].tolist())
-            options = [int(float(x)) for x in options_i]
-            options.sort(reverse=True)
-            
             cy = st.selectbox(
             'Select Year',
-            (options),key=200)
-        
-            current = (CLH[CLH['Year Taken']==cy])
-
-            current = current.reset_index(drop=True)
-
-            final = disp_acq_tables(current)
+            (options[0]),key=211)
             
-            st.table(data=final[0].style.format(thousands=",", precision=0))
+            m = st.selectbox(
+            'Select Submarket',
+            (options[1]),key=212)
             
-            res = convert_df(final[0])
+            if m == "All":
                 
-            if res:
+                current = (CLH[CLH['Year Taken']==cy])
                 
-                st.download_button(
-                label="Download results as CSV",
-                data=res,
-                key = 101,
-                file_name='Disposal League Table.csv',
-                mime='text/csv',)
+            else:
+                
+                current = (CLH[(CLH['Year Taken']==cy) & (CLH['Sub Market']==m)])
+
+            if len(current) > 0:
+                
+                current = current.reset_index(drop=True)
+                
+                final = disp_acq_tables(current)
+                
+                final_disp = final[0].reset_index(drop=True)
+                
+                final_disp.index = np.arange(1, len(final_disp) + 1)
+                
+                st.table(data=final_disp.style.format(thousands=",", precision=0))
+                
+                res = convert_df(final_disp)
+                    
+                if res:
+                    
+                    st.download_button(
+                    label="Download League Table as CSV",
+                    data=res,
+                    key = 101,
+                    file_name='Disposal League Table.csv',
+                    mime='text/csv',)
+                    
+            else:
+                
+                st.write("No results.")
             
                         
         with tab3:
         
             st.write("Use this tab to generate an acquisiton league table based on the uploaded CLH file.")
             
-            options_i = np.unique(CLH['Year Taken'].tolist())
-            options = [int(float(x)) for x in options_i]
-            options.sort(reverse=True)
-            
             cy = st.selectbox(
             'Select Year',
-            (options),key=201)
-
-            current = (CLH[CLH['Year Taken']==cy])
-
-            current = current.reset_index(drop=True)
-
-            final = disp_acq_tables(current)
+            (options[0]),key=221)
             
-            st.table(data=final[1].style.format(thousands=",", precision=0))
+            m = st.selectbox(
+            'Select Submarket',
+            (options[1]),key=222)
             
-            res = convert_df(final[1])
+            if m == "All":
                 
-            if res:
+                current = (CLH[CLH['Year Taken']==cy])
                 
-                st.download_button(
-                label="Download results as CSV",
-                data=res,
-                key = 1,
-                file_name='Acquisition League Table.csv',
-                mime='text/csv',)
+            else:
+                
+                current = (CLH[(CLH['Year Taken']==cy) & (CLH['Sub Market']==m)])
+
+            if len(current) > 0:
+                
+                current = current.reset_index(drop=True)
+                
+                final = disp_acq_tables(current)
+                
+                final_acq = final[1]
+                
+                final_acq.index = np.arange(1, len(final_acq) + 1)
+                
+                st.table(data=final_acq.style.format(thousands=",", precision=0))
+                
+                res = convert_df(final_acq)
+                    
+                if res:
+                    
+                    st.download_button(
+                    label="Download League Table as CSV",
+                    data=res,
+                    key = 1,
+                    file_name='Acquisition League Table.csv',
+                    mime='text/csv',)
+                    
+            else:
+                
+                st.write("No results.")
 
 
-                
                 
 
