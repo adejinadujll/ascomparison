@@ -373,26 +373,26 @@ if platform_options == "Agents Society":
             
 elif platform_options == "CLH":
     
-    try:
-        uploaded_file_1 = st.file_uploader(label="Upload Initial File", key="upload1")
+#     try:
+    uploaded_file_1 = st.file_uploader(label="Upload Initial File", key="upload1")
 
-        if uploaded_file_1 is not None:
-            
-            CLH = pd.read_excel(uploaded_file_1)
-                        
-            CLH['Date Taken'] = pd.to_datetime(CLH['Date Taken'],format="%Y-%m-%d")
+    if uploaded_file_1 is not None:
 
-            CLH['Year Taken'] = CLH['Date Taken'].dt.year
-            
-            CLH = CLH[(CLH["Lease Status"] == "Let") & (CLH["Year Taken"] != 2222)]
-                                    
-            with st.expander("See Uploaded Data"):
-            
-                st.write(CLH)
+        CLH = pd.read_excel(uploaded_file_1)
+
+        CLH['Date Taken'] = pd.to_datetime(CLH['Date Taken'],format="%Y-%m-%d")
+
+        CLH['Year Taken'] = CLH['Date Taken'].dt.year
+
+        CLH = CLH[(CLH["Lease Status"] == "Let") & (CLH["Year Taken"] != 2222)]
+
+        with st.expander("See Uploaded Data"):
+
+            st.write(CLH)
                     
-    except:
+#     except:
         
-        st.write("Upload error.")     
+#         st.write("Upload error.")     
   
     if uploaded_file_1 is not None:
 
