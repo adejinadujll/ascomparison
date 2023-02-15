@@ -343,12 +343,12 @@ if platform_options == "Agents Society":
             if len(result_1) > 0:
                 st.write(result_1)
                 time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-                st.download_button(
-                label="Download",
-                data=result_1,
-                key = 1,
-                file_name=f'Updated records at {time_string}.csv',
-                mime="text/csv")
+#                 st.download_button(
+#                 label="Download",
+#                 data=result_1,
+#                 key = 1,
+#                 file_name=f'Updated records at {time_string}.csv',
+#                 mime="text/csv")
                 
             else:
                 st.write("No results.")
