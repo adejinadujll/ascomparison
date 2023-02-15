@@ -338,14 +338,13 @@ if platform_options == "Agents Society":
                 result_1 = report_changes(result)
 
                 st.write(result_1)
+            
                 
-                res = convert_df(result_1)
-                
-                if res:
+                if result_1:
                     
                     st.download_button(
                     label="Download results as CSV",
-                    data=res,
+                    data=result_1,
                     key = 1,
                     file_name='Missing records.csv',
                     mime='text/csv',)
@@ -362,14 +361,12 @@ if platform_options == "Agents Society":
             result = find_new_additions(platform_options[0],df,df1)
 
             st.write(result)
-            
-            res = convert_df(result)
-            
-            if res:
+                        
+            if result:
                 
                 st.download_button(
                 label="Download results as CSV",
-                data=res,
+                data=result,
                 key = 2,
                 file_name='Missing records.csv',
                 mime='text/csv',)
@@ -381,14 +378,12 @@ if platform_options == "Agents Society":
             result = no_longer_listed(platform_options[0],df,df1)
 
             st.write(result)
-            
-            res = convert_df(result)
-            
-            if res:
+                        
+            if result:
             
                 st.download_button(
                 label="Download results as CSV",
-                data=res,
+                data=result,
                 key = 3,
                 file_name='Missing records.csv',
                 mime='text/csv',)
