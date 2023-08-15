@@ -28,6 +28,7 @@ button[data-baseweb="tab"] {
 </style>
 """
 
+
 def find_new_additions(platform_options,df,df1):
     
     file_1_ids = df['Advert ID'].to_list()
@@ -218,24 +219,23 @@ def combined_tables(current):
     return(both)
     
 
-@st.cache
+@st.cache_data
 def convert_df(df):
-    
-    return df.to_csv()
+   return df.to_csv(index=False).encode('utf-8')
 
-@st.cache
+@st.cache_data
 def upload_as(data):
     
     df = pd.read_excel(data)
     
     return(df)
 
-@st.cache
+@st.cache_data
 def upload_as2(data):
     
     return(pd.read_excel(data))
 
-@st.cache
+@st.cache_data
 def upload_clh(data):
 
     CLH = pd.read_excel(data)
@@ -341,13 +341,16 @@ if platform_options == "Agents Society":
 
                 if len(result_1) > 0:
                     st.write(result_1)
+
+                    file_download = convert_df(result_1)
+
                     time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-#                     st.download_button(
-#                     label="Download",
-#                     data=result_1,
-#                     key = 1,
-#                     file_name=f'Updated records at {time_string}.csv',
-#                     mime="text/csv")
+                    st.download_button(
+                    label="Download",
+                    data=file_download,
+                    key = 1,
+                    file_name=f'Updated records at {time_string}.csv',
+                    mime="text/csv")
 
                 else:
                     st.write("No results.")
@@ -366,12 +369,15 @@ if platform_options == "Agents Society":
             if len(result) > 0:
                 st.write(result)
                 time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-#                 st.download_button(
-#                 label="Download",
-#                 data=result.to_csv(index=False).encode('latin-1'),
-#                 key = 2,
-#                 file_name=f'Missing records at {time_string}.csv',
-#                 mime="text/csv")
+
+                file_download = convert_df(result)
+
+                st.download_button(
+                label="Download",
+                data=file_download,
+                key = 2,
+                file_name=f'Missing records at {time_string}.csv',
+                mime="text/csv")
             else:
                 st.write("No results.")
                 
@@ -384,12 +390,15 @@ if platform_options == "Agents Society":
             if len(result) > 0:
                 st.write(result)
                 time_string = datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-#                 st.download_button(
-#                 label="Download",
-#                 data=result.to_csv(index=False).encode('latin-1'),
-#                 key = 3,
-#                 file_name=f'Removed records at {time_string}.csv',
-#                 mime="text/csv")
+
+                file_download = convert_df(result)
+
+                st.download_button(
+                label="Download",
+                data=file_download,
+                key = 3,
+                file_name=f'Removed records at {time_string}.csv',
+                mime="text/csv")
                 
             else:
                 st.write("No results.")
@@ -562,4 +571,3 @@ elif platform_options == "Central London Hub":
 
 
                 
-
